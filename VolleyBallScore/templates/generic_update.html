@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block fast-nav %}
+  <hr>
+  <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+  &nbsp;>>&nbsp;
+
+  {% if parent_name == "group" %}
+    <a href="{% url 'manager:group' %}">Grupy</a>
+  {% elif parent_name == "group" %}
+    <a href="{% url 'manager:match' %}">Mecze</a>
+  {% elif parent_name == "team" %}
+    <a href="{% url 'manager:team' %}">Drużyny</a>
+  {% else %}
+    <span>Element Wyżej</span>
+  {% endif %}
+
+  &nbsp;>>&nbsp;
+  <span>Aktualizuj</span>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="post" action="">
+  {% csrf_token %}
+  {{form.as_p}}
+  <button type="submit">save</button>
+</form>
+
+{% endblock %}

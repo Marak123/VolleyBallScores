@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <span>&nbsp;&#8226;&nbsp;</span>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span>&nbsp;&#8226;&nbsp;</span>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+    <hr>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    &nbsp;>>&nbsp;
+    <span>Dużyny</span>
+    <hr>
+    <a href="{% url 'manager:team-create' %}">Dodaj</a>
+{% endblock %}
+
+{% block content %}
+
+<h3>Strona Drużyn</h3>
+
+<h5>Wszystkie Drużyny</h5>
+
+<ul>
+    {% for team in object_list %}
+        <li>{{ team.name }} &nbsp; <a href="{% url 'manager:team-edit' team.pk %}">edytuj</a> &nbsp; <a href="{% url 'manager:team-delete' team.pk %}">usuń</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

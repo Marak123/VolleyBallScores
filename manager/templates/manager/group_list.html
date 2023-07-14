@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <span>&nbsp;&#8226;&nbsp;</span>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span>&nbsp;&#8226;&nbsp;</span>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+    <hr>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    &nbsp;>>&nbsp;
+    <span>Grupy</span>
+    <hr>
+    <a href="{% url 'manager:group-create' %}">Dodaj</a>
+    <span>&nbsp;&#8226;&nbsp;</span>
+    <a href="{% url 'manager:random-assign-group' %}">Auto Przypisz Do Grup</a>
+{% endblock %}
+
+{% block content %}
+
+<h3>Strona Grup</h3>
+
+<h5>Wszystkie Grupy</h5>
+
+<ul>
+    {% for group in object_list %}
+        <li>{{ group.name }} &nbsp; <a href="{% url 'manager:group-edit' group.pk %}">edytuj</a> &nbsp; <a href="{% url 'manager:group-delete' group.pk %}">usuń</a></li>
+    {% endfor %}
+</ul>
+
+{% for gr_key, gr_value in group_assign.items %}
+    {% if gr_value|length != 0 %}
+        <h5 data-id-group="{{ gr_key.1 }}">{{ gr_key.0 }}</h5>
+        <ul>
+            {% for team in gr_value %}
+                <li data-id-team="{{ team.1 }}">{{ team.0 }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

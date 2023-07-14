@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="{% url 'expenses:category-create' %}">add</a>
+
+<style>
+	table{
+		width: 400px;
+	}
+	table th, table td{
+		text-align: center;
+	}
+	table caption{
+		font-weight: bold;
+		letter-spacing: 1px;
+	}
+</style>
+
+<table border="1">
+	<caption>Category</caption>
+	<thead>
+		<tr>
+			<th>name</th>
+			<th>Number related items</th>
+			<th>actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for obj in object_list %}
+			<tr>
+				<td>
+					{{ obj.name }}
+				</td>
+
+				<!-- 7 TASK. use of a method to retrieve the number of related elements to each object (category) in turn -->
+				<td>
+					{{ obj.number_related_items_with_expense }}
+				</td>
+				<td>
+					<!-- 6 TASK. addition of an option to edit any existing category -->
+					<a href="{% url 'expenses:category-edit' obj.id %}">edit</a>
+					<a href="{% url 'expenses:category-delete' obj.id %}">delete</a>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock %}
