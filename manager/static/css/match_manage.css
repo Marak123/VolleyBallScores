@@ -1,0 +1,103 @@
+main > div#team_fieldsets_container{
+    display: flex;
+}
+
+fieldset{
+    width: 400px;
+    height: 500px;
+    border: 5px solid black;
+}
+
+fieldset:first-child{
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+fieldset legend{
+    font-size: 30px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    color: purple;
+    text-align: center;
+    letter-spacing: 1.5px;
+}
+
+main > fieldset{
+    margin-left: 40px;
+    height: 150px;
+    width: 840px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+main > fieldset input#finist-match{
+    width: 20px;
+    height: 20px;
+}
+
+main > fieldset button#submit-all-data{
+    width: 400px;
+    height: 50px;
+    border-radius: 20px;
+    outline: none;
+    border: 1px solid black;
+    font-size: 15px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+
+main > fieldset button#submit-all-data:active{
+    transform: scale(0.8);
+}
+
+main > fieldset label[for="finish-match"]{
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+main > fieldset > div{
+    width: 180px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main div#team_fieldsets_container fieldset{
+    display: flex;
+    justify-content: space-evenly;
+    align-items:center;
+    flex-direction: column;
+}
+
+main div#team_fieldsets_container fieldset input[type="number"]{
+    width: 100px;
+    height: 50px;
+    outline: none;
+    font-size: 30px;
+}
+
+main div#team_fieldsets_container fieldset button.one_point{
+    width: 200px;
+    height: 200px;
+    font-size: 50px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    background-color: rgb(0, 249, 0);
+    color: gray;
+}
+
+main div#team_fieldsets_container fieldset button.minus_one_point{
+    width: 100px;
+    height: 50px;
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    background-color: rgb(227, 42, 42);
+    color: white;
+}
+
+main div#team_fieldsets_container fieldset button.one_point:active, main div#team_fieldsets_container fieldset button.minus_one_point:active{
+    transform: scale(0.8);
+}

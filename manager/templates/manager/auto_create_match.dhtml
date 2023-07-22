@@ -1,0 +1,47 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles%}
+    <link rel="stylesheet" href="{% static 'css/auto_create_match.css' %}">
+{% endblock %}
+
+{% block header %}
+    <h3>Stwórz Automatycznie Mecze (każda drużyna z każdą)</h3>
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+    <a href="{% url 'manager:match' %}">Mecze</a>
+    <span class="separe-path"></span>
+    <span class="end-point-path">Stwórz Automatycznie Mecze (każda drużyna z każdą)</span>
+{% endblock %}
+
+
+{% block content %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+
+        <div>
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+            {% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+        </div>
+
+    {% endfor %}
+    <button type="submit">Stwórz Mecze</button>
+</form>
+
+
+{% endblock %}

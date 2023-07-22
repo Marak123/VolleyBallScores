@@ -1,0 +1,76 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/manager.css' %}">
+{% endblock %}
+
+{% block header %}
+    <h3>Strona Zarządzanie</h3>
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:team' %}">Drużyny</a>
+    <a href="{% url 'manager:match' %}">Mecze</a>
+    <a href="{% url 'manager:group' %}">Grupy</a>
+    <a class="login_nav" href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <div id="all_teams_container">
+        <ul-title>Wszystkie Drużyny</ul-title>
+        <ul>
+            {% for team in teams %}
+                <li>
+                    <span class="name">{{ team.name }}</span>
+                    <div class="manage-btn">
+                        <span><a href="{% url 'manager:team-edit' team.pk %}">edytuj</a></span>
+                        <span><a href="{% url 'manager:team-delete' team.pk %}">usuń</a></span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="all_groups_container">
+        <ul-title>Wszystkie Grupy</ul-title>
+        <ul>
+            {% for group in groups %}
+                <li>
+                    <span class="name">{{ group.name }}</span>
+                    <div class="manage-btn">
+                        <span><a href="{% url 'manager:group-edit' group.pk %}">edytuj</a></span>
+                        <span><a href="{% url 'manager:group-delete' group.pk %}">usuń</a></span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="all_matchs_container">
+        <ul-title>Wszystkie Mecze</ul-title>
+        <ul>
+            {% for match in matchs %}
+                <li>
+                    <span class="name">{{ match }}</span>
+                    <div class="manage-btn">
+                        <span><a href="{% url 'manager:match-edit' match.pk %}">edytuj</a></span>
+                        <span><a href="{% url 'manager:match-delete' match.pk %}">usuń</a></span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div id="separet_line_between"></div>
+
+<div>
+
+</div>
+
+{% endblock %}

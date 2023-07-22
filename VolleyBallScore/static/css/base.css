@@ -1,0 +1,129 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html{
+    width: 100%;
+    height: 100%;
+}
+
+nav{
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: darkcyan;
+}
+
+nav a{
+    text-decoration: none;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: darkcyan;
+    color: whitesmoke;
+}
+
+nav a:hover, nav a.active{
+    background-color: aquamarine;
+    color: gray;
+}
+
+second-nav:empty{
+    display: none;
+}
+
+second-nav{
+    width: 100%;
+    height: 50px;
+    background-color: aquamarine;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+second-nav a{
+    text-decoration: none;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: aquamarine;
+    color: rgb(65, 64, 64);
+}
+
+second-nav a:hover, second-nav a.active{
+    background-color: darkcyan;
+    color: whitesmoke;
+}
+
+path-nav:empty{
+    display: none;
+}
+
+path-nav{
+    display: flex;
+    width: 100%;
+    height: 30px;
+    background-color: rgb(218, 248, 248);
+    align-items: center;
+    padding-left: 30px;
+}
+
+path-nav a, path-nav span{
+    font-size: 18px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: lightseagreen;
+}
+
+path-nav .separe-path{
+    margin-top: -6px;
+}
+
+path-nav .separe-path::before{
+    /* content: '→'; */
+    content: '»';
+    padding: 0 10px;
+    margin-top: -5px;
+    font-weight: bold;
+    font-size: 30px;
+    color: black;
+}
+
+path-nav .end-point-path{
+    color: rgb(134, 134, 134);
+}
+
+header:empty{
+    display: none;
+}
+
+header{
+    height: 50px;
+    width: 100%;
+    padding-top: 10px;
+}
+
+main{
+    height: calc(100% - 180px);
+    width: 100%;
+}
+
+second-nav:empty + main{
+    height: calc(100% - 130px);
+    width: 100%;
+}
+
+second-nav:empty + path-nav:empty + main{
+    height: calc(100% - 100px);
+    width: 100%;
+}
+
+second-nav:empty + path-nav:empty + header:empty + main{
+    height: calc(100% - 50px);
+    width: 100%;
+}

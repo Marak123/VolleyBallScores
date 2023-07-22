@@ -184,3 +184,55 @@ class DrawNumbers:
 
         return data
 
+
+class RandomAssign:
+    def __init__(self) -> None:
+        self.draw_num = DrawNumbers()
+
+    def autoAssign(self, groups: list, teams: list) -> dict:
+
+        groups_len = len(groups)
+        teams_len = len(teams)
+
+        if groups_len == 0 or teams_len == 0:
+            return {}
+        elif groups_len > teams_len:
+            groups_len = teams_len
+        elif groups_len == 1:
+            return { f"{groups[0]}": teams }
+
+        amount_teams_to_group = int(teams_len / groups_len)
+
+        data = { i: amount_teams_to_group for i in range(groups_len) }
+
+        if not (teams_len % groups_len) == 0:
+            req = self.draw_num.getRandomNumber((teams_len % groups_len), 0, groups_len - 1)
+
+            if req['error']['status']:
+                print("Error:", req['error']['message'], req['error']['code'])
+
+            for i in req['data']:
+                data[i] += 1
+
+        teams_list = teams
+        dataRet = {}
+        for key,value in data.items():
+
+            teams_list_length = len(teams_list)
+            if teams_list_length == value:
+                dataRet[f'{groups[key]}'] = teams_list
+                break
+
+            get_random_num = self.draw_num.getRandomNumber(value, 0, teams_list_length - 1)
+
+            if get_random_num['error']['status']:
+                print("Error:", get_random_num['error']['message'], req['error']['code'])
+
+            t = []
+            for i, v in enumerate(get_random_num['data']):
+                t.append(teams_list[i])
+                teams_list.pop(i)
+
+            dataRet[f'{groups[key]}'] = t
+
+        return dataRet

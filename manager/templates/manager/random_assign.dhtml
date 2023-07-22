@@ -1,0 +1,45 @@
+{% extends "base.dhtml" %}
+
+{% load static%}
+
+{% block styles%}
+    <link rel="stylesheet" href="{% static 'css/random_assign.css' %}">
+{% endblock %}
+
+{% block header %}
+    <h3>Strona Automatycznego Przypisywania Grup</h3>
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+    <a href="{% url 'manager:group' %}">Grupy</a>
+    <span class="separe-path"></span>
+    <span class="end-point-path">Auto Przypisz Do Grup</span>
+{% endblock %}
+
+
+{% block content %}
+
+    <h5>Zaznacz Drużyny które mają zostać automatycznie przypisane oraz Grupy do których mają zostać przypisane drużyny</h5>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div>
+                {{ field.label_tag }}
+                {{ field }}
+            </div>
+        {% endfor %}
+
+        <button type="submit">Przypisz</button>
+    </form>
+
+{% endblock %}

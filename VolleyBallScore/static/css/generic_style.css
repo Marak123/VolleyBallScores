@@ -1,0 +1,54 @@
+form{
+    width: 400px;
+    margin: 40px;
+}
+
+form p{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+form p label{
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    margin-right: 80px;
+}
+
+form p select, form p input{
+    width: 150px;
+}
+
+form p select{
+    height: 25px;
+    font-family: 'Courier New', Courier, monospace;
+    border: none;
+    outline: none;
+    background-color: whitesmoke;
+}
+
+form button[type="submit"]{
+    width: 200px;
+    height: 40px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    margin: 40px 0 0 130px;
+    border-radius: 10px;
+    border: 2px solid green;
+    box-shadow: 0 0 10px green;
+}
+
+form button#delete-record{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    background-color: #ff6347;
+}
+
+#delete-info, #second-delete-info{
+    margin: 20px 0 0 20px;
+    color: rgb(132, 0, 255);
+    text-shadow: 0 0 10px rgb(233, 30, 30);
+}

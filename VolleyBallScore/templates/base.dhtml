@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block meta_title %}Volleyball Scores{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="{% static '/favicon.ico' %}" type="image/x-icon">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block styles %}{% endblock %}
+    {% block scripts %}{% endblock %}
+  </head>
+  <body>
+
+    <nav>
+      {% block nav %}
+        <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+        <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+      {% endblock %}
+    </nav>
+
+    <second-nav>{% block second-nav %}{% endblock %}</second-nav>
+    <path-nav>{% block path-nav %}{% endblock %}</path-nav>
+    <header>{% block header %}{% endblock %}</header>
+    <main>{% block content %}{% endblock %}</main>
+
+  </body>
+</html>

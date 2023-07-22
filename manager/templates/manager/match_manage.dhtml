@@ -1,0 +1,82 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/match_manage.css' %}">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/match_manage.js' %}"></script>
+    <script>
+        const API_ADD_POINT = "http://127.0.0.1:8000/manage/match/{{ match.pk }}/add-point"
+        const API_FINISH_DATA = "http://127.0.0.1:8000/manage/match/{{ match.pk }}/finish-data"
+        const MATCH_ID = {{ match.pk }}
+        const csrfmiddlewaretoken = "{{ csrf_token }}"
+    </script>
+{% endblock %}
+
+{% block header %}
+    <h3>Zarządzanie Meczem "{{ match }}"</h3>
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+    <a href="{% url 'manager:match' %}">Mecze</a>
+    <span class="separe-path"></span>
+    <span class="end-point-path">Zarządzanie Meczem</span>
+{% endblock %}
+
+
+{% block content %}
+
+{% comment %} <form action="" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+
+        <div>
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+            {% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+        </div>
+
+    {% endfor %}
+    <button type="submit">Ułóż Mecze</button>
+</form> {% endcomment %}
+
+<div id="team_fieldsets_container">
+    <fieldset>
+        <legend>{{ match.team_one }}</legend>
+        <input type="number" name="point_team_one" id="point_team_one" min="0" value="{{ match.team_one_score }}" data-team-id="{{ match.team_one.pk }}">
+        <button class="one_point" id="one_point_team_one" data-team-id="{{ match.team_one.pk }}">Dodaj</button>
+        <button class="minus_one_point" id="minus_one_point_team_one" data-team-id="{{ match.team_one.pk }}">Odejmij</button>
+    </fieldset>
+
+    <fieldset>
+        <legend>{{ match.team_two }}</legend>
+        <input type="number" name="point_team_two" id="point_team_two" min="0" value="{{ match.team_two_score }}" data-team-id="{{ match.team_two.pk }}">
+        <button class="one_point" id="one_point_team_two" data-team-id="{{ match.team_two.pk }}">Dodaj</button>
+        <button class="minus_one_point" id="minus_one_point_team_two" data-team-id="{{ match.team_two.pk }}">Odejmij</button>
+    </fieldset>
+</div>
+
+<fieldset>
+    <legend>Cały Mecz</legend>
+    <div>
+        <label for="finish-match">Zakończ Mecz</label>
+        <input type="checkbox" name="finish-match" id="finist-match" {{ match.finished|yesno:"checked," }}>
+    </div>
+
+    <button id="submit-all-data">Wyślij Zaktualizowane Dane Na Serwer</button>
+</fieldset>
+
+{% endblock %}

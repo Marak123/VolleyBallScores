@@ -39,6 +39,7 @@ class Match(models.Model):
     team_one_score = models.IntegerField(default=0)
     team_two_score = models.IntegerField(default=0)
 
+    finished = models.BooleanField(default=False, verbose_name="Zakończony")
 
     def __str__(self) -> str:
         return f'{self.team_one} vs {self.team_two}'
@@ -54,3 +55,8 @@ class Match(models.Model):
         self._meta.get_field('team_two_score').verbose_name = f"Punkty '{self.team_two}'"
 
         super().save(*args, **kwargs)
+
+class MatchesOrder(models.Model):
+
+    match = models.ForeignKey(Match, models.PROTECT)
+    number_in_order = models.IntegerField(unique=True)

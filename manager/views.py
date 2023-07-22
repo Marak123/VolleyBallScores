@@ -1,11 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
+from django.http import JsonResponse
 from django.views.generic.list import ListView, View
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST, require_GET, require_http_methods
 
-from .models import Team, Match, GroupGame
-from .forms import RandomAssignTeamToGroup_TeamForms, RandomAssignTeamToGroup_GroupGameForms
-from .random_request import DrawNumbers
+from .models import Team, Match, GroupGame, MatchesOrder
+from .forms import RandomAssignTeamToGroupForms, AutoCreateMatchForms, AutoPlayOrderingForms
+from .random_request import RandomAssign
+
+import json
 
 # class TeamListView(ListView):
 #     model = Team
@@ -28,7 +34,7 @@ from .random_request import DrawNumbers
 #             **kwargs)
 
 class myCreateView(LoginRequiredMixin, CreateView):
-    template_name = 'generic_create.html'
+    template_name = 'generic_create.dhtml'
     parent_name = None
 
     def get_context_data(self, **kwargs):
@@ -38,7 +44,7 @@ class myCreateView(LoginRequiredMixin, CreateView):
         return context
 
 class myUpdateView(LoginRequiredMixin, UpdateView):
-    template_name = 'generic_update.html'
+    template_name = 'generic_update.dhtml'
     parent_name = None
 
     def get_context_data(self, **kwargs):
@@ -48,7 +54,7 @@ class myUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 class myDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = 'generic_delete.html'
+    template_name = 'generic_delete.dhtml'
     parent_name = None
 
     def get_context_data(self, **kwargs):
@@ -59,7 +65,7 @@ class myDeleteView(LoginRequiredMixin, DeleteView):
 
 class TeamListView(LoginRequiredMixin, ListView):
     model = Team
-    template_name = 'manager/manager.html'
+    template_name = 'manager/manager.dhtml'
 
     def get_context_data(self, **kwargs):
         context = super(TeamListView, self).get_context_data(**kwargs)
@@ -73,19 +79,12 @@ class TeamListView(LoginRequiredMixin, ListView):
 
 class GroupListView(LoginRequiredMixin, ListView):
     model = GroupGame
-    template_name = 'manager/group_list.html'
+    template_name = 'manager/group_list.dhtml'
 
     def get_context_data(self, **kwargs):
         context = super(GroupListView, self).get_context_data(**kwargs)
 
-        # groups_with_teams = GroupGame.objects.annotate(
-        #     assigned_teams=ArrayAgg('team__name', distinct=True)
-        # ).values('pk', 'assigned_teams')
-
-        # group_assign = {item['pk']: item['assigned_teams'] for item in groups_with_teams}
-
         result_dict = {}
-
         groups_with_teams = GroupGame.objects.values('pk', 'name')
         for group in groups_with_teams:
             team_names = Team.objects.filter(group_id=group['pk']).values_list('name', 'pk')
@@ -100,25 +99,24 @@ class GroupListView(LoginRequiredMixin, ListView):
 
         return context
 
-class RandomAssignTeamToGroup(View):
-    template_name = "manager/random_assign.html"
+
+class RandomAssignTeamToGroup(LoginRequiredMixin, View):
+    template_name = "manager/random_assign.dhtml"
 
     def get(self, request):
-        group_form = RandomAssignTeamToGroup_GroupGameForms()
-        team_form = RandomAssignTeamToGroup_TeamForms()
-        return render(request, self.template_name, context={'group_form': group_form, 'team_form': team_form})
+        form = RandomAssignTeamToGroupForms()
+        return render(request, self.template_name, context={'form': form})
 
     def post(self, request):
-        group_form = RandomAssignTeamToGroup_GroupGameForms(request.POST)
-        team_form = RandomAssignTeamToGroup_TeamForms(request.POST)
+        form = RandomAssignTeamToGroupForms(request.POST)
 
-        if group_form.is_valid() and team_form.is_valid():
-            selected_groups = group_form.cleaned_data['groups']
-            selected_teams = team_form.cleaned_data['teams']
+        if form.is_valid():
+            selected_groups = form.cleaned_data['groups']
+            selected_teams = form.cleaned_data['teams']
 
 # Add checking if team is now assign to some group
-
-            auto_assign_result = self.autoAssign(selected_groups, selected_teams)
+            ra = RandomAssign()
+            auto_assign_result = ra.autoAssign(selected_groups, selected_teams)
 
             for key, value in auto_assign_result.items():
                 group_to_assign = GroupGame.objects.get(pk=key)
@@ -129,76 +127,167 @@ class RandomAssignTeamToGroup(View):
 
             return redirect('manager:group')
 
-        return render(request, self.template_name, {'group_form': group_form, 'team_form': team_form})
+        return render(request, self.template_name, {'form': form,})
 
-    def autoAssign(self, groups: list, teams: list) -> dict:
-        draw_num = DrawNumbers()
+class AutoCreateMatchView(LoginRequiredMixin, View):
+    template_name = "manager/auto_create_match.dhtml"
 
-        groups_len = len(groups)
-        teams_len = len(teams)
+    def get(self, request):
+        form = AutoCreateMatchForms()
 
-        if groups_len == 0 or teams_len == 0:
-            return {}
-        elif groups_len > teams_len:
-            groups_len = teams_len
-        elif groups_len == 1:
-            return { f"{groups[0]}": teams }
+        return render(request, self.template_name, context={'form': form})
 
-        amount_teams_to_group = int(teams_len / groups_len)
+    def post(self, request):
+        form = AutoCreateMatchForms(request.POST)
 
-        data = { i: amount_teams_to_group for i in range(groups_len) }
+        if form.is_valid():
+            by_what = form.cleaned_data['by_team_or_group']
+            selected_groups = form.cleaned_data['groups']
+            selected_teams = form.cleaned_data['teams']
 
-        if not (teams_len % groups_len) == 0:
-            req = draw_num.getRandomNumber((teams_len % groups_len), 0, groups_len - 1)
+            if int(by_what) == 0:
+                for iO, team in enumerate(selected_teams):
+                    for team_sec in selected_teams[iO+1:]:
+                        Match.objects.create(
+                            team_one=Team.objects.get(pk=int(team)),
+                            team_two=Team.objects.get(pk=int(team_sec))
+                        ).save()
 
-            if req['error']['status']:
-                print("Error:", req['error']['message'], req['error']['code'])
+            elif int(by_what) == 1:
+                for group in selected_groups:
+                    allTeams = Team.objects.filter(group__pk=group).all()
+                    for iO, team in enumerate(allTeams):
+                        for team_sec in allTeams[iO+1:]:
+                            Match.objects.create(
+                                team_one=team,
+                                team_two=team_sec
+                            ).save()
 
-            for i in req['data']:
-                data[i] += 1
+            return redirect("manager:match")
 
-        teams_list = teams
-        dataRet = {}
-        for key,value in data.items():
+        return render(request, self.template_name, context={'form': form})
 
-            teams_list_length = len(teams_list)
-            if teams_list_length == value:
-                dataRet[f'{groups[key]}'] = teams_list
-                break
+class AutoPlayOrderingView(LoginRequiredMixin, View):
+    template_name = "manager/auto_play_ordering.dhtml"
 
-            get_random_num = draw_num.getRandomNumber(value, 0, teams_list_length - 1)
+    def get(self, request):
+        form = AutoPlayOrderingForms()
 
-            if get_random_num['error']['status']:
-                print("Error:", get_random_num['error']['message'], req['error']['code'])
+        return render(request, self.template_name, context={'form': form})
 
-            t = []
-            for i, v in enumerate(get_random_num['data']):
-                t.append(teams_list[i])
-                teams_list.pop(i)
+    def post(self, request):
+        form = AutoPlayOrderingForms(request.POST)
 
-            dataRet[f'{groups[key]}'] = t
+        if form.is_valid():
+            pass
 
-        return dataRet
+            return redirect("manager:match")
 
-# class ManualAssignTeamToGroup(LoginRequiredMixin, View):
-#     template_name = "manager/manual_assign.html"
+        return render(request, self.template_name, context={'form': form})
 
-#     def get(self, request):
-#         group_form = RandomAssignTeamToGroup_GroupGameForms()
-#         team_form = RandomAssignTeamToGroup_TeamForms()
-#         return render(request, self.template_name, context={'group_form': group_form, 'team_form': team_form})
+class ManageMatchView(LoginRequiredMixin, View):
+    template_name = "manager/match_manage.dhtml"
 
-#     def post(self, request):
-#         group_form = RandomAssignTeamToGroup_GroupGameForms(request.POST)
-#         team_form = RandomAssignTeamToGroup_TeamForms(request.POST)
+    def get(self, request, pk):
+        match = Match.objects.get(pk=pk)
 
-#         if group_form.is_valid() and team_form.is_valid():
-#             selected_groups = group_form.cleaned_data['groups']
-#             selected_teams = team_form.cleaned_data['teams']
+        return render(request, self.template_name, context={'match': match})
 
-#             print("Group: ", selected_groups)
-#             print("Team: ", selected_teams)
+    def post(self, request):
+        form = AutoPlayOrderingForms(request.POST)
 
-#             return redirect('manager:group')
+        if form.is_valid():
+            pass
 
-#         return render(request, self.template_name, {'group_form': group_form, 'team_form': team_form})
+            return redirect("manager:match")
+
+        return render(request, self.template_name, context={'form': form})
+
+
+
+
+@login_required
+def ClearAssignGroupView(request):
+    Team.objects.all().update(group=None)
+    return redirect('manager:group')
+
+@login_required
+def RemoveAllMatchView(request):
+    Match.objects.all().delete()
+    return redirect("manager:match")
+
+
+@csrf_protect
+@require_POST
+def addPointToMatch(request, pk):
+    request_data = json.loads(request.body)
+
+    if not ('team_id' in request_data or 'point' in request_data or 'match_id' in request_data):
+        data = {
+            "error": 400,
+            "message": "Invalid data",
+            "data": request.POST
+        }
+        return JsonResponse(data, safe=False)
+
+    try:
+        match = Match.objects.filter(pk=pk).first()
+        team = Team.objects.filter(pk=request_data['team_id']).first()
+    except Match.DoesNotExist or Team.DoesNotExist:
+        return JsonResponse({
+            "error": 400,
+            "message": "Invalid data"
+        }, safe=False)
+
+
+    if match.team_one == team:
+        Match.objects.filter(pk=pk).update(team_one_score=int(request_data['point']))
+    elif match.team_two == team:
+        Match.objects.filter(pk=pk).update(team_two_score=int(request_data['point']))
+    else:
+        data = {
+            "error": 400,
+            "message": "Invalid data"
+        }
+        return JsonResponse(data, safe=False)
+
+    return JsonResponse({
+        "match_id": match.pk,
+        "team_one_id": match.team_one.pk,
+        "team_two_id": match.team_two.pk,
+        "team_one_score": match.team_one_score,
+        "team_two_score": match.team_two_score,
+    })
+
+@csrf_protect
+@require_POST
+def finishData(request, pk):
+    request_data = json.loads(request.body)
+
+    if not ('finished' in request_data or 'team_one_score' in request_data or 'team_two_score' in request_data or 'match_id' in request_data):
+        data = {
+            "error": 400,
+            "message": "Invalid data",
+            "data": request.POST
+        }
+        return JsonResponse(data, safe=False)
+
+    try:
+        match = Match.objects.filter(pk=pk).first()
+        Match.objects.filter(pk=pk).update(team_one_score=int(request_data['team_one_score']))
+        Match.objects.filter(pk=pk).update(team_two_score=int(request_data['team_two_score']))
+        Match.objects.filter(pk=pk).update(finished=int(request_data['finished']))
+    except Match.DoesNotExist or Team.DoesNotExist:
+        return JsonResponse({
+            "error": 400,
+            "message": "Invalid data"
+        }, safe=False)
+
+    return JsonResponse({
+        "match_id": match.pk,
+        "team_one_id": match.team_one.pk,
+        "team_two_id": match.team_two.pk,
+        "team_one_score": match.team_one_score,
+        "team_two_score": match.team_two_score,
+        "finish": match.finished
+    })

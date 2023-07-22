@@ -1,0 +1,41 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/generic_style.css' %}">
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+
+    {% if parent_name == "group" %}
+      <a href="{% url 'manager:group' %}">Grupy</a>
+    {% elif parent_name == "match" %}
+      <a href="{% url 'manager:match' %}">Mecze</a>
+    {% elif parent_name == "team" %}
+      <a href="{% url 'manager:team' %}">Drużyny</a>
+    {% else %}
+      <span>Element Wyżej</span>
+    {% endif %}
+
+    <span class="separe-path"></span>
+    <span class="end-point-path">Aktualizuj</span>
+{% endblock %}
+
+{% block content %}
+
+  <form method="post" action="">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit">save</button>
+  </form>
+
+{% endblock %}

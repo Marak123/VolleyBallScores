@@ -3,7 +3,7 @@ from django.urls import path, reverse_lazy
 from django.contrib.auth.decorators import login_required
 
 from .models import Team, Match, GroupGame
-from .views import TeamListView, RandomAssignTeamToGroup, myCreateView, myDeleteView, myUpdateView, GroupListView
+from .views import TeamListView, RandomAssignTeamToGroup, myCreateView, myDeleteView, myUpdateView, GroupListView, addPointToMatch, AutoCreateMatchView, ClearAssignGroupView, RemoveAllMatchView, AutoPlayOrderingView, ManageMatchView, finishData
 # from .forms import MatchCreateForm
 
 
@@ -16,7 +16,7 @@ urlpatterns = [
 
     path('team', login_required(ListView.as_view(
             model=Team,
-            template_name='manager/team_list.html'
+            template_name='manager/team_list.dhtml'
         )), name='team'),
 
     path('team/add', myCreateView.as_view(
@@ -47,8 +47,10 @@ urlpatterns = [
 
     path('match', login_required(ListView.as_view(
         model=Match,
-        template_name='manager/match_list.html'
+        template_name='manager/match_list.dhtml'
     )), name='match'),
+
+    path('match/<int:pk>', ManageMatchView.as_view(), name="match-manage"),
 
     path('match/add', myCreateView.as_view(
         model=Match,
@@ -70,16 +72,11 @@ urlpatterns = [
         parent_name="match"
     ), name='match-edit'),
 
-    # '''
-    #     Add Points Patchs
-    # '''
-
-    # path('match/<int:pk>/add-point', login_required(UpdateView.as_view(
-    #     model=Match,
-    #     fields=('team_one_score', 'team_two_score'),
-    #     success_url=reverse_lazy('manager:manage'),
-    #     template_name='generic_update.html'
-    # )), name='match-add-point'),
+    path('match/remove-all-match', RemoveAllMatchView, name="remove-all-match"),
+    path('match/auto-create', AutoCreateMatchView.as_view(), name="auto-create-match"),
+    path('match/play-order', AutoPlayOrderingView.as_view(), name="auto-play-ordering-match"),
+    path('match/<int:pk>/add-point', addPointToMatch, name='match-add-point'),
+    path('match/<int:pk>/finish-data', finishData, name='match-add-point'),
 
     # '''
     #     Group Patchs
@@ -107,23 +104,8 @@ urlpatterns = [
         parent_name="group"
     ), name='group-edit'),
 
-    path('group/random-assign', login_required(RandomAssignTeamToGroup.as_view()), name="random-assign-group"),
+    path('group/clear-assign', ClearAssignGroupView, name="clear-assign-group"),
+    path('group/random-assign', RandomAssignTeamToGroup.as_view(), name="random-assign-group"),
     # path('group/manual-assign', login_required(ManualAssignTeamToGroup.as_view()), name="manual-assign-group"),
 
-
-    # # assign team to group
-    # path('assign-to-group', login_required(UpdateView.as_view(
-    #     model=Match,
-    #     fields=('team_one_score', 'team_two_score'),
-    #     success_url=reverse_lazy('manager:manage'),
-    #     template_name='generic_update.html'
-    # )), name='assign-to-group'),
-
-    # # auto assign team to group
-    # path('auto-assign-to-group', login_required(UpdateView.as_view(
-    #     model=Match,
-    #     fields=('team_one_score', 'team_two_score'),
-    #     success_url=reverse_lazy('manager:manage'),
-    #     template_name='generic_update.html'
-    # )), name='auto-assign-to-group'),
 ]

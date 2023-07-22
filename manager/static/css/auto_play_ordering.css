@@ -1,0 +1,49 @@
+form{
+    padding: 15px 20px;
+}
+
+form > div{
+    padding: 10px 10px;
+}
+
+form > div > div{
+    padding: 10px 30px;
+}
+
+form > div > div > div{
+    padding: 2px 10px;
+}
+
+form > div > label {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+form > div > div > div > label{
+    font-size: 15px;
+    letter-spacing: -1px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+select#id_ordering{
+    width: 150px;
+    height: 25px;
+    font-family: 'Courier New', Courier, monospace;
+    border: none;
+    outline: none;
+    background-color: whitesmoke;
+    margin-left: 30px;
+}
+
+form button[type="submit"]{
+    width: 200px;
+    height: 40px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    margin-left: 150px;
+    margin-top: 50px;
+    border-radius: 10px;
+    border: 2px solid green;
+    box-shadow: 0 0 10px green;
+}

@@ -1,0 +1,54 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/match.css' %}">
+{% endblock %}
+
+{% block header %}
+    {% comment %} <h3>Strona Meczy</h3> {% endcomment %}
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block second-nav %}
+    <a href="{% url 'manager:match-create' %}">Dodaj</a>
+    <a href="{% url 'manager:remove-all-match' %}">Usuń Wszystkie Mecze</a>
+    <a href="{% url 'manager:auto-create-match' %}">Stwórz Mecze</a>
+    <a href="{% url 'manager:auto-play-ordering-match' %}">Kolejność Gry</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+    <span class="end-point-path">Mecze</span>
+{% endblock %}
+
+{% block content %}
+
+<ul-title>Wszystkie Mecze</ul-title>
+<ul>
+    {% for match in object_list %}
+        <li>
+            <span class="name"><a href="{% url 'manager:match-manage' match.pk %}">{{ match }}</a></span>
+            <div class="manage-btn">
+                <div id="score">
+                    <span>{{ match.team_one_score }}</span>
+                    <span>:</span>
+                    <span>{{ match.team_one_score }}</span>
+                </div>
+                <div>
+                    <span><a href="{% url 'manager:match-edit' match.pk %}">edytuj</a></span>
+                    <span><a href="{% url 'manager:match-delete' match.pk %}">usuń</a></span>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

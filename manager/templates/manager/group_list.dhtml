@@ -1,0 +1,57 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/group.css' %}">
+{% endblock %}
+
+{% block header %}
+    {% comment %} <h3>Strona Grup</h3> {% endcomment %}
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block second-nav %}
+    <a href="{% url 'manager:group-create' %}">Dodaj</a>
+    <a href="{% url 'manager:random-assign-group' %}">Auto Przypisz Do Grup</a>
+    <a href="{% url 'manager:clear-assign-group' %}">Wyczyść Przypisanie Do Grup</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+    <span class="end-point-path">Grupy</span>
+{% endblock %}
+
+{% block content %}
+
+<ul-title>Wszystkie Grupy</ul-title>
+<ul>
+    {% for group in object_list %}
+        <li>
+            <span class="name">{{ group }}</span>
+            <div class="manage-btn">
+                <span><a href="{% url 'manager:group-edit' group.pk %}">edytuj</a></span>
+                <span><a href="{% url 'manager:group-delete' group.pk %}">usuń</a></span>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+{% for gr_key, gr_value in group_assign.items %}
+    {% if gr_value|length != 0 %}
+        <ul-title data-id-group="{{ gr_key.1 }}">{{ gr_key.0 }}</ul-title>
+        <ul>
+            {% for team in gr_value %}
+                <li data-id-team="{{ team.1 }}">{{ team.0 }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

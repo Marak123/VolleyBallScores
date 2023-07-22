@@ -1,0 +1,44 @@
+{% extends "base.dhtml" %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/team.css' %}">
+{% endblock %}
+
+{% block header %}
+    {% comment %} <h3>Strona Drużyn</h3> {% endcomment %}
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'mainpage:mainpage' %}">Strona Główna</a>
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <a href="{% url 'auths:logout' %}">Wyloguj</a>
+{% endblock %}
+
+{% block second-nav %}
+<a href="{% url 'manager:team-create' %}">Dodaj</a>
+{% endblock %}
+
+{% block path-nav %}
+    <a href="{% url 'manager:manage' %}">Zarządzanie</a>
+    <span class="separe-path"></span>
+    <span class="end-point-path">Dużyny</span>
+{% endblock %}
+
+{% block content %}
+
+<ul-title>Wszystkie Drużyny</ul-title>
+<ul>
+    {% for team in object_list %}
+        <li>
+            <span class="name">{{ team.name }}</span>
+            <div class="manage-btn">
+                <span><a href="{% url 'manager:team-edit' team.pk %}">edytuj</a></span>
+                <span><a href="{% url 'manager:team-delete' team.pk %}">usuń</a></span>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
